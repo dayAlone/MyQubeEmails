@@ -1,0 +1,46 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true,
+		"jquery": true
+	},
+	"ecmaFeatures": {
+		"modules": true,
+		"jsx": true
+	},
+	"parser": "babel-eslint",
+	"plugins": ["shadow-exception", "react"],
+	"globals": {
+		"React": true,
+		"cdn": true
+	},
+	"rules": {
+		"new-cap": 0,
+		"no-param-reassign": 0,
+		"semi" : 0,
+		"id-length": 0,
+		"indent": [2, "tab"],
+		"dot-notation": [0, {"allowKeywords": false}],
+		"consistent-this": [0, "that"],
+		"no-unused-vars": [1, {"args": "after-used", "varsIgnorePattern": "[rR]eact"}],
+		"one-var": 0,
+        "max-len": [1, 1000],
+		"comma-dangle": 0,
+		"no-cond-assign": 0,
+		"no-nested-ternary": 0,
+		"spaced-comment": 0,
+		"guard-for-in": 0,
+		"camelcase": 0,
+		"func-names": 0,
+		"no-use-before-define": 0,
+		"no-constant-condition": 0,
+		"no-shadow": 0,
+		"padded-blocks": 0,
+		"no-console": 0,
+		"jsx-quotes": [1, "prefer-single"],
+		"no-trailing-spaces": 0,
+		"semi": [2, "never"]
+	},
+	"extends": "airbnb/legacy"
+}
