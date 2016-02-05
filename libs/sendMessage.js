@@ -1,4 +1,4 @@
-let mandrill = require('node-mandrill')('qhcD56rRZIu7OeqqfXD6PQ')
+let mandrill = require('node-mandrill')('AbYry6AUdFi5yV7WV0Xmfw') //qhcD56rRZIu7OeqqfXD6PQ
 export default function* (user, template, vars, callback = false) {
 	let { email, name } = user
 	let fields = {

@@ -5,9 +5,9 @@ import getCSV from './libs/getCSV'
 import validateEmail from './libs/validateEmail'
 import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
-const Email = initMongoose('ambs5')
-const TEMPLATE = 'theatr2'
-const TEST = false
+const Email = initMongoose('u_creative')
+const TEMPLATE = 'theatr3'
+const TEST = true
 const VARS = [
 	{
 		name: 'start',
@@ -24,7 +24,7 @@ let testEmails = [
 	//{ first_name: 'Юлия', email: 'yulchan-b@yandex.ru' },
 	//{ first_name: 'Юлия', email: 'Yuliya.work4608@gmail.com' },
 	//{ first_name: 'Дмитрий', email: 'dp@radia.ru' },
-	//{ first_name: 'Андрей', email: 'andrey.slider@gmail.com' },
+	{ first_name: 'Андрей', email: 'andrey.slider@gmail.com' },
 ]
 
 const Action = function *(test = false) {
@@ -56,7 +56,7 @@ const Action = function *(test = false) {
 }
 
 const Import = function * () {
-	let items = yield getCSV(__dirname + '/csv/' + 'amb07.csv', ';')
+	let items = yield getCSV(__dirname + '/csv/' + 'rejects-3.csv', ',')
 
 	for (let i = 0; i < items.length; i++) {
 		let item = items[i]
@@ -75,12 +75,31 @@ const Import = function * () {
 	}
 }
 
+const Clear = function * () {
+	let items = yield getCSV(__dirname + '/csv/' + 'rejects-3.csv', ',')
+
+	for (let i = 0; i < items.length; i++) {
+		let item = items[i]
+		if (item) {
+			yield Email.update({
+				email: item[0]
+			}, {
+				$set: {
+					rejected: true
+				}
+			})
+			console.log(item[0])
+		}
+	}
+}
+
 co(function*() {
 	yield Action(TEST)
 
 	//yield Email.update({ sended: true }, { $set: { sended: false } }, { multi: true })
 
 	//yield Import()
+	//yield Clear()
 
 }).then(() => {
 	console.log('All sended')
