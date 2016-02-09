@@ -25,7 +25,7 @@
 	"co": "latest",
 	"email-verify": "latest",
 	"csv-parse": "latest",
-	"mongoose": "latest",
+	"mongoose": "^4.4.1",
 	"node-mandrill": "latest"
   },
   "devDependencies": {
