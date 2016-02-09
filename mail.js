@@ -1,21 +1,23 @@
 import initMongoose from './libs/mongoose'
+import chalk from 'chalk'
 import co from 'co'
 import sendMessage from './libs/sendMessage'
 import getCSV from './libs/getCSV'
+import verifier from 'email-verify'
 import validateEmail from './libs/validateEmail'
 import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
 const Email = initMongoose('u_creative')
-const TEMPLATE = 'theatr3'
-const TEST = true
+const TEMPLATE = 'theatr4'
+const TEST = false
 const VARS = [
 	{
 		name: 'start',
-		content: 5
+		content: 7
 	},
 	{
 		name: 'start_time',
-		content: '20:00'
+		content: '19:00'
 	}
 ]
 
@@ -29,7 +31,7 @@ let testEmails = [
 
 const Action = function *(test = false) {
 
-	let emails = test ? testEmails : yield Email.find({ sended: false })
+	let emails = test ? testEmails : yield Email.find({ sended: false }).sort({ _id: 1 })//.limit(1000).skip(4200)
 
 	console.log(`Total recivers: ${emails.length}`)
 
@@ -53,6 +55,7 @@ const Action = function *(test = false) {
 			}
 		)
 	}
+
 }
 
 const Import = function * () {
@@ -93,13 +96,51 @@ const Clear = function * () {
 	}
 }
 
-co(function*() {
-	yield Action(TEST)
+const Verify = function * () {
+	let emails = yield Email.find({ }).sort({ _id: 1 }).skip(13)
+	let errors = 0
+	let simmilar = 0
+	let total = 0
+	console.log(`Verifying ${emails.length} emails`)
+	for (let i = 0; i < emails.length; i++) {
+		total++
+		let el = emails[i]
 
+		let status = yield new Promise((fulfill, reject) => {
+			verifier.verify(el.email, {
+				sender: 'andrey.slider@gmail.com',
+				//fdqn: 'gmail.com',
+				timeout: 2000
+			}, (err, info) => {
+				if (!err) fulfill(info)
+			})
+		})
+		if (!status.success) {
+			yield Email.update({
+				email: el.email
+			}, {
+				$set: {
+					rejected2: true
+				}
+			})
+			//errors++
+			//if (el.rejected) simmilar++
+			//console.log(chalk.red(el.email), chalk.gray(status.info.replace(el.email, '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
+		}
+
+
+	}
+
+}
+
+co(function*() {
 	//yield Email.update({ sended: true }, { $set: { sended: false } }, { multi: true })
+	//yield Action(TEST)
+
 
 	//yield Import()
 	//yield Clear()
+	yield Verify()
 
 }).then(() => {
 	console.log('All sended')

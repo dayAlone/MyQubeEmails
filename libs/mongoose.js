@@ -8,7 +8,8 @@ export default (table) => {
 		third_name: String,
 		email: String,
 		sended: Boolean,
-		rejected: Boolean
+		rejected: Boolean,
+		rejected2: Boolean,
 	}
 	const Email = mongoose.model(table, params)
 	return Email
