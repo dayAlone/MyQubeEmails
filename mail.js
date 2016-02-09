@@ -149,3 +149,9 @@ co(function*() {
 }).then(() => {
 	console.log('All sended')
 }).catch(e => (console.error(e.stack)))
+
+
+import http from 'http'
+let server = http.createServer((request, response) => {})
+
+server.listen(process.env.PORT)
