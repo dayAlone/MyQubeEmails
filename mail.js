@@ -7,7 +7,7 @@ import verifier from 'email-verify'
 import validateEmail from './libs/validateEmail'
 import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
-const Email = initMongoose('u_creatives')
+const Email = initMongoose('email')
 const TEMPLATE = 'theatr4'
 const TEST = false
 const VARS = [
