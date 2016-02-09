@@ -125,7 +125,7 @@ const Verify = function * () {
 			})
 			//errors++
 			//if (el.rejected) simmilar++
-			//console.log(chalk.red(el.email), chalk.gray(status.info.replace(el.email, '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
+			console.log(chalk.red(el.email), chalk.gray(status.info.replace(el.email + ' ', '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
 		}
 
 

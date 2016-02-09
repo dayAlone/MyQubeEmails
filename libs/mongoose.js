@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 export default (table) => {
-	mongoose.connect('mongodb://localhost/myQube')
+	mongoose.connect(process.env.NODE_ENV === 'production' ? process.env.MONGOLAB_URI : 'mongodb://localhost/myQube')
 	const params = {
 		first_name: String,
 		second_name: String,
