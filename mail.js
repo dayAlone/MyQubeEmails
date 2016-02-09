@@ -98,9 +98,7 @@ const Clear = function * () {
 
 const Verify = function * () {
 	let emails = yield Email.find({ }).sort({ _id: 1 })
-	let errors = 0
-	let simmilar = 0
-	let total = 0
+	let timer = false
 	console.log(`Verifying ${emails.length} emails`)
 	for (let i = 0; i < emails.length; i++) {
 		total++
@@ -126,7 +124,7 @@ const Verify = function * () {
 			})
 			//errors++
 			//if (el.rejected) simmilar++
-			console.log(chalk.red(el.email), chalk.gray(status.info.replace(el.email + ' ', '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
+			console.log(i + 1, chalk.blue(el.email), chalk.gray(status.info.replace(el.email + ' ', '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
 		}
 
 
@@ -135,13 +133,13 @@ const Verify = function * () {
 }
 
 co(function*() {
-	//yield Email.update({ sended: true }, { $set: { sended: false } }, { multi: true })
+	yield Email.update({ }, { $set: { checked: false } }, { multi: true })
 	//yield Action(TEST)
 
 
 	//yield Import()
 	//yield Clear()
-	//yield Verify()
+	yield Verify()
 
 }).then(() => {
 	console.log('All sended')
