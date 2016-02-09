@@ -110,7 +110,7 @@ const Verify = function * () {
 			verifier.verify(el.email, {
 				sender: 'andrey.slider@gmail.com',
 				//fdqn: 'gmail.com',
-				timeout: 2000
+				timeout: 5000
 			}, (err, info) => {
 				if (!err) fulfill(info)
 			})
@@ -138,7 +138,7 @@ co(function*() {
 	//yield Email.update({ sended: true }, { $set: { sended: false } }, { multi: true })
 	//yield Action(TEST)
 
-	
+
 	//yield Import()
 	//yield Clear()
 	yield Verify()
