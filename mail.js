@@ -138,10 +138,7 @@ co(function*() {
 	//yield Email.update({ sended: true }, { $set: { sended: false } }, { multi: true })
 	//yield Action(TEST)
 
-	Email.collection.insert({
-		first_name: '123',
-		email: 'ak@radia.ru'
-	})
+	
 	//yield Import()
 	//yield Clear()
 	yield Verify()
