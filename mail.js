@@ -141,7 +141,7 @@ co(function*() {
 
 	//yield Import()
 	//yield Clear()
-	yield Verify()
+	//yield Verify()
 
 }).then(() => {
 	console.log('All sended')
