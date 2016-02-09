@@ -10,6 +10,7 @@ export default (table) => {
 		sended: Boolean,
 		rejected: Boolean,
 		rejected2: Boolean,
+		checked: Boolean
 	}
 	const Email = mongoose.model(table, params)
 	return Email

@@ -97,7 +97,7 @@ const Clear = function * () {
 }
 
 const Verify = function * () {
-	let emails = yield Email.find({ }).sort({ _id: 1 }).skip(13)
+	let emails = yield Email.find({ checked: false }).sort({ _id: 1 })
 	let errors = 0
 	let simmilar = 0
 	let total = 0
@@ -120,7 +120,8 @@ const Verify = function * () {
 				email: el.email
 			}, {
 				$set: {
-					rejected2: true
+					rejected2: true,
+					checked: true
 				}
 			})
 			//errors++
