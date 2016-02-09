@@ -110,7 +110,7 @@ const Verify = function * () {
 			verifier.verify(el.email, {
 				sender: 'andrey.slider@gmail.com',
 				//fdqn: 'gmail.com',
-				timeout: 5000
+				timeout: 10000
 			}, (err, info) => {
 				if (!err) fulfill(info)
 			})
