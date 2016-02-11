@@ -7,9 +7,9 @@ import verifier from 'email-verify'
 import validateEmail from './libs/validateEmail'
 import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
-const Email = initMongoose('email')
+const Email = initMongoose('u_creative')
 const TEMPLATE = 'theatr4'
-const TEST = false
+const TEST = true
 const VARS = [
 	{
 		name: 'start',
@@ -97,13 +97,14 @@ const Clear = function * () {
 }
 
 const Verify = function * () {
-	let emails = yield Email.find({ }).sort({ _id: 1 })
+	let emails = yield Email.find({ email: 'taker94@icloud.ru' }).sort({ _id: 1 })
 	let timer = false
 	console.log(`Verifying ${emails.length} emails`)
 	for (let i = 0; i < emails.length; i++) {
-		total++
-		let el = emails[i]
 
+		let el = emails[i]
+		if (el.email.indexOf('icloud.ru') !== -1) continue
+		console.log(el.email)
 		let status = yield new Promise((fulfill, reject) => {
 			verifier.verify(el.email, {
 				sender: 'andrey.slider@gmail.com',
@@ -113,19 +114,16 @@ const Verify = function * () {
 				if (!err) fulfill(info)
 			})
 		})
-		if (!status.success) {
-			yield Email.update({
-				email: el.email
-			}, {
-				$set: {
-					rejected2: true,
-					checked: true
-				}
-			})
-			//errors++
-			//if (el.rejected) simmilar++
-			console.log(i + 1, chalk.blue(el.email), chalk.gray(status.info.replace(el.email + ' ', '')), el.rejected ? chalk.green(el.rejected) : chalk.red(false))
-		}
+
+		yield Email.update({
+			email: el.email
+		}, {
+			$set: {
+				rejected2: !status.success,
+				checked: true
+			}
+		}, { multi: true })
+		console.log(chalk.gray(status.info.replace(el.email + ' ', '')), !status.success ? chalk.green(!status.success) : chalk.red(!status.success), el.rejected ? chalk.green(el.rejected) : chalk.red(false), '\n')
 
 
 	}
@@ -133,13 +131,13 @@ const Verify = function * () {
 }
 
 co(function*() {
-	yield Email.update({ }, { $set: { checked: false } }, { multi: true })
-	//yield Action(TEST)
+//	yield Email.update({ }, { $set: { checked: false } }, { multi: true })
+	yield Action(TEST)
 
 
 	//yield Import()
 	//yield Clear()
-	yield Verify()
+	//yield Verify()
 
 }).then(() => {
 	console.log('All sended')
