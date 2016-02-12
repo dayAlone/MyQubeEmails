@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import co from 'co'
 import sendMessage from './libs/sendMessage'
 import getCSV from './libs/getCSV'
-import verifier from 'email-verify'
+import { verify } from './libs/emailVerifier'
 import validateEmail from './libs/validateEmail'
 import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
@@ -97,15 +97,15 @@ const Clear = function * () {
 }
 
 const Verify = function * () {
-	let emails = yield Email.find({ email: 'taker94@icloud.ru' }).sort({ _id: 1 })
+	let emails = yield Email.find({  }).sort({ _id: 1 })
 	let timer = false
 	console.log(`Verifying ${emails.length} emails`)
-	for (let i = 0; i < emails.length; i++) {
+	for (let i = 0; i < 1; i++) {
 
 		let el = emails[i]
 		if (el.email.indexOf('icloud.ru') !== -1) continue
 		console.log(el.email)
-		let status = yield new Promise((fulfill, reject) => {
+		/*let status = yield new Promise((fulfill, reject) => {
 			verifier.verify(el.email, {
 				sender: 'andrey.slider@gmail.com',
 				//fdqn: 'gmail.com',
@@ -113,8 +113,13 @@ const Verify = function * () {
 			}, (err, info) => {
 				if (!err) fulfill(info)
 			})
+		})*/
+		el.email = 'asjdnjahsnd@mail.ru'
+		yield verify(el.email, {
+			sender: 'andrey.slider@gmail.com',
+			timeout: 3000
 		})
-
+		/*
 		yield Email.update({
 			email: el.email
 		}, {
@@ -125,19 +130,18 @@ const Verify = function * () {
 		}, { multi: true })
 		console.log(chalk.gray(status.info.replace(el.email + ' ', '')), !status.success ? chalk.green(!status.success) : chalk.red(!status.success), el.rejected ? chalk.green(el.rejected) : chalk.red(false), '\n')
 
-
+		*/
 	}
 
 }
 
 co(function*() {
-//	yield Email.update({ }, { $set: { checked: false } }, { multi: true })
-	yield Action(TEST)
-
+	//yield Email.update({ }, { $set: { checked: false } }, { multi: true })
+	//yield Action(TEST)
 
 	//yield Import()
 	//yield Clear()
-	//yield Verify()
+	yield Verify()
 
 }).then(() => {
 	console.log('All sended')
