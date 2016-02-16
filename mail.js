@@ -9,6 +9,13 @@ import capitalizeFirstLetter from './libs/capitalizeFirstLetter'
 
 const Email = initMongoose('u_creative')
 const TEMPLATE = 'theatr4'
+const CAMPAIGN = {
+	template: 'mail-2.3',
+	subject: 'Интерактивный спектакль от победителей U_Concept: лучшие моменты',
+	code: 'U_Creative photos',
+	sender: 'info@myqube.ru',
+	from: 'MyQube.ru'
+}
 const TEST = true
 const VARS = [
 	{
@@ -26,7 +33,7 @@ let testEmails = [
 	//{ first_name: 'Юлия', email: 'yulchan-b@yandex.ru' },
 	//{ first_name: 'Юлия', email: 'Yuliya.work4608@gmail.com' },
 	//{ first_name: 'Дмитрий', email: 'dp@radia.ru' },
-	{ first_name: 'Андрей', email: 'andrey.slider@gmail.com' },
+	{ first_name: 'Андрей', email: 'ak@radia.ru' },
 ]
 
 const Action = function *(test = false) {
@@ -42,7 +49,7 @@ const Action = function *(test = false) {
 				name: el.first_name,
 				email: el.email
 			},
-			TEMPLATE,
+			CAMPAIGN,
 			VARS,
 			() => {
 				if (test) {
@@ -136,12 +143,12 @@ const Verify = function * () {
 }
 
 co(function*() {
-	//yield Email.update({ }, { $set: { checked: false } }, { multi: true })
-	//yield Action(TEST)
+	//yield Email.update({ }, { $set: { sended: false } }, { multi: true })
+	yield Action(TEST)
 
 	//yield Import()
 	//yield Clear()
-	yield Verify()
+	//yield Verify()
 
 }).then(() => {
 	console.log('All sended')

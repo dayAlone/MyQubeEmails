@@ -1,35 +1,79 @@
-/*
-let mandrill = require('node-mandrill')('qhcD56rRZIu7OeqqfXD6PQ') // AbYry6AUdFi5yV7WV0Xmfw
-export default function* (user, template, vars, callback = false) {
-	let { email, name } = user
-	let fields = {
-		message: {
-			to: [{ email: email, name: name }],
-			merge: true,
-			inline_css: true,
-			merge_language: 'handlebars',
-			global_merge_vars: [
-				{
-					name: 'user_name',
-					content: name
-				},
-				...vars
-			]
-		},
-		template_content: [],
-		template_name: template //'u-creative' //'theatr' //'u-creative'
+import fs from 'co-fs'
 
+const Mailjet = require('node-mailjet').connect('4275ba309f633460053c0e3539e7a419', 'a23233599b78beeae1665cf0fbb172e2')
+
+export default function* (user, campaign, vars, callback = false) {
+	let { email, name } = user
+	let { template, subject, sender, from, code } = campaign
+	let html = yield fs.readFile(__dirname + '/../html/' + template + '.html', 'utf8')
+	let text = html.replace(/<head>[\s\S]*?<\/head>/, '').replace(/(<([^>]+)>)/ig, '').replace(/\s{2,}/g, '\n')
+	let sendEmail = Mailjet.post('send')
+	
+	let emailData = {
+		FromEmail: sender, //'ak@radia.ru',
+		FromName: from, //'My Name',
+		Subject: subject, //'Test with the NodeJS Mailjet wrapper',
+		'Html-part': html, //'Hello NodeJs !',
+		'Text-part': text,
+		Recipients: [{
+			Email: email,
+			Name: name,
+			Vars: {
+				userName: name
+			}
+		}],
+		'Mj-campaign': code,
+		'Mj-deduplicatecampaign': 1
 	}
 	yield new Promise((fulfill, reject) => {
-		mandrill('/messages/send-template', fields, (error, response) => {
-			if (callback && !error) callback()
-			if (error) console.log(error)
+		sendEmail
+			.request(emailData)
+			.on('success', response => {
+				if (callback) callback()
+				fulfill(response)
 
-			if (error) reject(error)
-			fulfill(response)
-		})
+			})
+			.on('error', error => {
+				console.log(error)
+				reject(error)
+			})
 	})
 }
+
+
+
+/*
+	let mandrill = require('node-mandrill')('qhcD56rRZIu7OeqqfXD6PQ') // AbYry6AUdFi5yV7WV0Xmfw
+	export default function* (user, template, vars, callback = false) {
+		let { email, name } = user
+		let fields = {
+			message: {
+				to: [{ email: email, name: name }],
+				merge: true,
+				inline_css: true,
+				merge_language: 'handlebars',
+				global_merge_vars: [
+					{
+						name: 'user_name',
+						content: name
+					},
+					...vars
+				]
+			},
+			template_content: [],
+			template_name: template //'u-creative' //'theatr' //'u-creative'
+
+		}
+		yield new Promise((fulfill, reject) => {
+			mandrill('/messages/send-template', fields, (error, response) => {
+				if (callback && !error) callback()
+				if (error) console.log(error)
+
+				if (error) reject(error)
+				fulfill(response)
+			})
+		})
+	}
 */
 
 /*
@@ -85,37 +129,3 @@ export default function* (user, template, vars, callback = false) {
 
 }
 */
-
-const Mailjet = require('node-mailjet').connect('4275ba309f633460053c0e3539e7a419', 'a23233599b78beeae1665cf0fbb172e2')
-
-export default function* (user, template, vars, callback = false) {
-	let { email, name } = user
-	var sendEmail = Mailjet.post('send')
-
-	var emailData = {
-		FromEmail: 'ak@radia.ru',
-		FromName: 'My Name',
-		Subject: 'Test with the NodeJS Mailjet wrapper',
-		'Html-part': 'Hello NodeJs !',
-		Recipients: [{
-			Email: email,
-			Name: name
-		}],
-		'Mj-campaign': 'SendAPI_campaign',
-		'Mj-deduplicatecampaign': 1
-	}
-	yield new Promise((fulfill, reject) => {
-		sendEmail
-			.request(emailData)
-			.on('success', response => {
-				if (callback) callback()
-
-				fulfill(response)
-
-			})
-			.on('error', error => {
-				console.log(error)
-				reject(error)
-			})
-	})
-}
