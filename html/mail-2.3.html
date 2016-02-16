@@ -52,7 +52,12 @@
 		<br />
 		<br />
 		<h2 style="font-size:48px; line-height:53px; color:#FFFFFF;font-family: 'Arial';font-weight: normal;">
-			[[var:userName]],<br/>здравствуйте!
+		{% if var:userName %}
+            [[var:userName]],<br/>
+            здравствуйте!
+        {% else %}
+            Здравствуйте!
+        {% endif %}
 		</h2>
 		<p style="font-size: 14px; line-height: 24px;font-family: 'Arial';color:white;">
 			Вы получили это письмо, потому что являетесь членом закрытой группы&nbsp;«Kent Lab».
