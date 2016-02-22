@@ -7,14 +7,24 @@ export default function* (user, campaign, vars, callback = false) {
 	let { template, subject, sender, from, code } = campaign
 	let html = yield fs.readFile(__dirname + '/../html/' + template + '.html', 'utf8')
 	let text = html.replace(/<head>[\s\S]*?<\/head>/, '').replace(/(<([^>]+)>)/ig, '').replace(/\s{2,}/g, '\n')
+
+	let stat = Mailjet.post('campaign')
+	stat.request({ID: 806256, IsStarred: false, FromEmail: 'no-reply@myqube.ru'})//({CampaignID: 806256})
+    .on('error', function (error, response) {
+		console.log(response.body)
+	})
+    .on('success', function (response, body) {
+		console.log(body)
+	});
+	/*
 	let sendEmail = Mailjet.post('send')
-	
 	let emailData = {
 		FromEmail: sender, //'ak@radia.ru',
 		FromName: from, //'My Name',
 		Subject: subject, //'Test with the NodeJS Mailjet wrapper',
 		'Html-part': html, //'Hello NodeJs !',
 		'Text-part': text,
+		Headers: { Precedence: 'bulk' },
 		Recipients: [{
 			Email: email,
 			Name: name,
@@ -38,6 +48,7 @@ export default function* (user, campaign, vars, callback = false) {
 				reject(error)
 			})
 	})
+	*/
 }
 
 

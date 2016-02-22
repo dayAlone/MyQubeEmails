@@ -12,8 +12,8 @@ const TEMPLATE = 'theatr4'
 const CAMPAIGN = {
 	template: 'mail-2.3',
 	subject: 'Интерактивный спектакль от победителей U_Concept: лучшие моменты',
-	code: 'U_Creative photos',
-	sender: 'info@myqube.ru',
+	code: 'U_Creative theater photos',
+	sender: 'no-reply@myqube.ru',
 	from: 'MyQube.ru'
 }
 const TEST = true
@@ -32,13 +32,13 @@ let testEmails = [
 	//{ first_name: 'Юлия', email: 'julia.borzova@coralpromo.ru' },
 	//{ first_name: 'Юлия', email: 'yulchan-b@yandex.ru' },
 	//{ first_name: 'Юлия', email: 'Yuliya.work4608@gmail.com' },
-	//{ first_name: 'Дмитрий', email: 'dp@radia.ru' },
+	//{ first_name: 'Дмитрий', email: 'radia.interactive@gmail.com' },
 	{ first_name: 'Андрей', email: 'ak@radia.ru' },
 ]
 
 const Action = function *(test = false) {
 
-	let emails = test ? testEmails : yield Email.find({ sended: false }).sort({ _id: 1 })//.limit(1000).skip(4200)
+	let emails = test ? testEmails : yield Email.find({ sended: false, rejected: false }).sort({ _id: 1 })//.limit(1000).skip(2700)
 
 	console.log(`Total recivers: ${emails.length}`)
 
@@ -86,32 +86,30 @@ const Import = function * () {
 }
 
 const Clear = function * () {
-	let items = yield getCSV(__dirname + '/csv/' + 'rejects-3.csv', ',')
+	let items = yield getCSV(__dirname + '/csv/' + 'activity-2-1.csv', ';')
 
 	for (let i = 0; i < items.length; i++) {
 		let item = items[i]
 		if (item) {
 			yield Email.update({
-				email: item[0]
+				email: item[1]
 			}, {
 				$set: {
-					rejected: true
+					rejected: item[4] !== 'sent'
 				}
-			})
-			console.log(item[0])
+			}, { multi: true })
+			console.log(item[1])
 		}
 	}
 }
 
 const Verify = function * () {
-	let emails = yield Email.find({  }).sort({ _id: 1 })
+	let emails = yield Email.find({}).sort({ _id: 1 })
 	let timer = false
 	console.log(`Verifying ${emails.length} emails`)
 	for (let i = 0; i < 1; i++) {
 
 		let el = emails[i]
-		if (el.email.indexOf('icloud.ru') !== -1) continue
-		console.log(el.email)
 		/*let status = yield new Promise((fulfill, reject) => {
 			verifier.verify(el.email, {
 				sender: 'andrey.slider@gmail.com',
@@ -121,10 +119,10 @@ const Verify = function * () {
 				if (!err) fulfill(info)
 			})
 		})*/
-		el.email = 'asjdnjahsnd@mail.ru'
-		yield verify(el.email, {
+		el.email = 'andrey.slider123@yandex.ru'
+		let result = yield verify(el.email, {
 			sender: 'andrey.slider@gmail.com',
-			timeout: 3000
+			timeout: 4000
 		})
 		/*
 		yield Email.update({
@@ -144,11 +142,11 @@ const Verify = function * () {
 
 co(function*() {
 	//yield Email.update({ }, { $set: { sended: false } }, { multi: true })
-	yield Action(TEST)
+	//yield Action(TEST)
 
 	//yield Import()
 	//yield Clear()
-	//yield Verify()
+	yield Verify()
 
 }).then(() => {
 	console.log('All sended')

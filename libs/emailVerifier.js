@@ -27,13 +27,14 @@ export const verify = function * (email, options) {
 	try {
 		addresses = yield dns.resolveMx(domain)
 	} catch (e) {
-		return result(false, 'Domain not fount')
+		return result(false, 'Domain not fount: ' + e.message)
 	}
 
 	if (addresses && addresses.length === 0) return result(false, 'No MX Records')
 
 	const smtp = addresses.sort((a, b) => (b.priority - a.priority)).map(el => (el.exchange))[0]
 	const response = yield new Promise((fulfill, reject) => {
+
 		const socket = net.createConnection(options.port, smtp)
 		let step = 0
 		socket.setTimeout(options.timeout, () => {
@@ -59,13 +60,20 @@ export const verify = function * (email, options) {
 						else socket.end()
 						break
 					case 3:
-						if (response.indexOf('250') > -1)  {
+						if (response.indexOf('250') > -1) {
 							socket.write(`DATA\nSubject: Test letter\n\nHello! It is test!\n.\n`, () => (step++))
 						} else fulfill({ result: false, info: 'The email account does not exist' })
 						break
 					case 4:
-						if (response.indexOf('550') === -1)  {
-							fulfill({ result: true, info: 'The email account exist' })
+						if (response.indexOf('550') === -1) {
+							if (
+								response.indexOf('No such user') !== -1 // Yandex
+							) {
+								fulfill({ result: false, info: 'The email account does not exist' })
+							} else {
+								fulfill({ result: true, info: 'The email account exist' })
+							}
+
 						} else fulfill({ result: true, info: 'Unknown error' })
 						break
 					default:
